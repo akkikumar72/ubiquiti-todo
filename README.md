@@ -9,7 +9,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Technical requirements
 - Language: TypeScript
-- Framework: React/Next 13
+- Framework: React/Next.Js 13 App Router
 - Backend: Supabase/Node/Postgres
 
 ## User Stories to Consider/Implement
