@@ -8,7 +8,7 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 const supabaseCreateClient = () => {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 };
 
@@ -50,15 +50,14 @@ class DatabaseClient {
   }
 
   tweets = {
-    getAll: async () =>
-      await this.instance.from("tweets").select(),
+    getAll: async () => await this.instance.from("tweets").select(),
     insert: async (setData: DatabaseTables["tweets"]["Insert"]) =>
       await this.instance.from("tweets").insert(setData).select().single(),
     remove: async (setId: string) =>
       await this.instance.from("tweets").delete().eq("id", setId),
     update: async (
       setId: string,
-      setData: DatabaseTables["tweets"]["Update"]
+      setData: DatabaseTables["tweets"]["Update"],
     ) => {
       return await this.instance
         .from("tweets")
@@ -79,9 +78,8 @@ class DatabaseClient {
         .select()
         .eq("id", auth.data.user.id)
         .single();
-    }
+    },
   };
-  //
   users = {
     getProfile: async (userId: string) =>
       await this.instance
