@@ -40,7 +40,7 @@ const TodoSingle = ({ tweets }: { tweets: TweetType[] }) => {
     <div className="mx-auto flex max-w-5xl flex-col gap-12 px-3 py-8 md:py-12">
       {error && <ErrorBlock>{error}</ErrorBlock>}
       <Card className="gap-0">
-        {tweets?.map((tweet) => (
+        {tweets?.map((tweet, index) => (
           <Transition state={!error ? true : false} key={tweet?.id}>
             <div className="flex items-center ">
               <span
@@ -80,7 +80,7 @@ const TodoSingle = ({ tweets }: { tweets: TweetType[] }) => {
                 Remove
               </Button>
             </div>
-            {tweets.length > 1 && <Divider />}
+            {index !== tweets?.length - 1 && <Divider />}
           </Transition>
         ))}
       </Card>

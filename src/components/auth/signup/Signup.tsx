@@ -1,7 +1,6 @@
 "use client";
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
 import SignupForm from "./SignupForm";
 import useFeedback from "@/hooks/useFeedback";
 
@@ -10,12 +9,8 @@ export default function Signup() {
   const { error, loading, setError, setLoading, setSuccess, success } =
     useFeedback();
 
-  const handleSignUp = async (
-    email: string,
-    password: string
-  ) => {
+  const handleSignUp = async (email: string, password: string) => {
     setLoading(true);
-
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -30,7 +25,7 @@ export default function Signup() {
       return;
     }
     setSuccess(
-      "If you haven't registered with this email address before, you will receive an activation link for your account shortly."
+      "If you haven't registered with this email address before, you will receive an activation link for your account shortly.",
     );
   };
 

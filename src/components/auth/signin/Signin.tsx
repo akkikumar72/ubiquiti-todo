@@ -2,7 +2,6 @@
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
-
 import LoginForm from "./SigninForm";
 import useFeedback from "@/hooks/useFeedback";
 
