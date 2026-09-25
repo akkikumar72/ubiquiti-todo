@@ -1,29 +1,25 @@
-import { routes } from "@/constants";
-import UserProfile from "@/features/user/components/UserProfile";
+import { cloudConfigured } from "@/lib/config";
 import { DatabaseClient } from "@/util/databaseClient";
-
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
-const UserByIdPage = async ({
-  params: { userId },
+import { notFound, redirect } from "next/navigation";
+import UserProfile from "@/features/user/components/UserProfile";
+export default async function UserByIdPage({
+  params,
 }: {
   params: { userId: string };
-}) => {
-  if (!userId) redirect(routes.user.profile);
-
-  const db = new DatabaseClient({ type: "serverComponent", cookies });
-  const { data: profile, error } = await db.users.getProfile(userId);
-  const currentUser = await db.currentUser.auth();
-
-  if (error) redirect(routes.user.profile);
-
+}) {
+  if (!cloudConfigured || !/^[0-9a-f-]{36}$/i.test(params.userId)) notFound();
+  const database = new DatabaseClient({ type: "serverComponent", cookies });
+  const {
+    data: { user },
+  } = await database.getAuthUser();
+  if (!user) redirect("/signin");
+  const profile = await database.users.getProfile(params.userId);
+  if (!profile.data) notFound();
   return (
-      <UserProfile
-          user={profile}
-          authProfile={currentUser.data.user?.id === profile.id}
-      />
+    <UserProfile
+      user={profile.data}
+      authProfile={user.id === profile.data.id}
+    />
   );
-};
-
-export default UserByIdPage;
+}

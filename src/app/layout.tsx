@@ -1,13 +1,23 @@
-export const dynamic = "force-dynamic";
-import { Metadata } from "next";
-import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"] });
+import type { Metadata } from "next";
+import { Manrope, Lora } from "next/font/google";
 import "./globals.css";
-
+const sans = Manrope({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+const serif = Lora({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+});
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Ubiquiti - Rethinking IT",
-  description: "ubiquiti TODO Assignment",
-  authors: [{ name: "Akash", url: "https://github.com/akkikumar72" }],
+  title: "Daymark · A little more focus",
+  description:
+    "A calm workspace for tasks, projects, and the days ahead. Built with Next.js and Supabase.",
+  authors: [{ name: "Akash Pathak", url: "https://github.com/akkikumar72" }],
+  icons: { icon: "/icon.svg" },
 };
 export default function RootLayout({
   children,
@@ -15,10 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.className}>
-      <body className="bg-zinc-950 text-zinc-100 transition-colors duration-500">
-        {children}
-      </body>
+    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

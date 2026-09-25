@@ -1,35 +1,25 @@
 "use client";
-
-import {
-  BackButton,
-  Button,
-  Card,
-  CardFooter,
-  Code,
-  Heading,
-} from "@/components/ui";
-import { RxReload } from "react-icons/rx";
-import { routes } from "@/constants";
-
-const GeneralErrorPage = ({
-  error,
+import Link from "next/link";
+export default function ErrorPage({
   reset,
 }: {
   error: Error;
   reset: () => void;
-}) => {
+}) {
   return (
-    <Card>
-      <BackButton href={routes.home}>Back to sets</BackButton>
-      <Heading>An error occurred</Heading>
-      <Code footer={error.stack}>{error.message}</Code>
-      <CardFooter className="flex flex-row justify-end">
-        <Button variant="secondary" icon={<RxReload />} onClick={reset}>
-          Try again
-        </Button>
-      </CardFooter>
-    </Card>
+    <main className="error-page">
+      <div className="eyebrow">A MOMENT TO REGROUP</div>
+      <h1>We couldn’t open this space.</h1>
+      <p>
+        Try again, or return to the local workspace. If cloud sync is enabled,
+        check your Supabase configuration.
+      </p>
+      <button className="button primary" onClick={reset}>
+        Try again
+      </button>
+      <Link className="button secondary" href="/?demo=1">
+        Open local demo
+      </Link>
+    </main>
   );
-};
-
-export default GeneralErrorPage;
+}

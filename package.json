@@ -11,7 +11,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "update-types": "npx supabase gen types typescript --project-id \"flparvzpufpncszzepwg\" > src/lib/supabase.ts"
+    "update-types": "npx supabase gen types typescript --project-id \"flparvzpufpncszzepwg\" > src/lib/supabase.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "verify": "yarn test && yarn lint && yarn typecheck && yarn build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",

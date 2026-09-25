@@ -50,7 +50,21 @@ class DatabaseClient {
   }
 
   tweets = {
-    getAll: async () => await this.instance.from("tweets").select(),
+    getAll: async () => {
+      const rows: DatabaseTables["tweets"]["Row"][] = [];
+      const pageSize = 1000;
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error } = await this.instance
+          .from("tweets")
+          .select()
+          .order("created_at", { ascending: false })
+          .order("id")
+          .range(offset, offset + pageSize - 1);
+        if (error) return { data: null, error };
+        rows.push(...data);
+        if (data.length < pageSize) return { data: rows, error: null };
+      }
+    },
     insert: async (setData: DatabaseTables["tweets"]["Insert"]) =>
       await this.instance.from("tweets").insert(setData).select().single(),
     remove: async (setId: string) =>

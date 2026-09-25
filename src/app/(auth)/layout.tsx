@@ -1,25 +1,26 @@
-import { Card, Heading, Paragraph } from "@/components/ui";
-
+import Brand from "@/components/ui/Brand";
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen">
-      <div className="mx-auto mt-12 w-full p-5 md:max-w-md">
-        <Card className="flex flex-col gap-2">
-          <div className="my-2 flex flex-col items-center gap-4">
-            <span className="text-6xl">
-            </span>
-            <div className="flex flex-col items-center">
-              <Heading className="font-medium">Hello!</Heading>
-              <Paragraph>Sign in or sign up to continue.</Paragraph>
-            </div>
-          </div>
-          {children}
-        </Card>
-      </div>
-    </div>
+    <main className="auth-page">
+      <section className="auth-story">
+        <Brand />
+        <h1>
+          Good days start
+          <br />
+          with a little
+          <br />
+          clarity.
+        </h1>
+        <p>
+          A home for your ideas, your plans, and the little things that make a
+          difference.
+        </p>
+      </section>
+      <section className="auth-main">{children}</section>
+    </main>
   );
 }

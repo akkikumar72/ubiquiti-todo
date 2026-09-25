@@ -1,22 +1,25 @@
-import { cookies } from "next/headers";
-import { DatabaseClient } from "@/util/databaseClient";
+import { dateKey } from "@/lib/tasks";
 import Home from "@/features/home/components/Home";
-import { redirect } from "next/navigation";
-import { routes } from "@/constants";
-
-const HomePage = async () => {
+import { cloudConfigured } from "@/lib/config";
+import { DatabaseClient } from "@/util/databaseClient";
+import { cookies } from "next/headers";
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { demo?: string };
+}) {
+  if (!cloudConfigured || searchParams.demo === "1")
+    return <Home initialToday={dateKey()} cloud={false} />;
   const database = new DatabaseClient({ type: "serverComponent", cookies });
   const {
     data: { user },
   } = await database.getAuthUser();
-
-  const { data } = await database.tweets.getAll();
-
-  if (!user || !data) {
-    redirect(routes.auth.signin);
-  }
-
-  return <Home Todo={data || []} />;
-};
-
-export default HomePage;
+  return (
+    <Home
+      initialToday={dateKey()}
+      cloud={Boolean(user)}
+      userId={user?.id}
+      userName={user?.user_metadata?.name || user?.email?.split("@")[0]}
+    />
+  );
+}
