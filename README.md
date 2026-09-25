@@ -2,7 +2,7 @@
 
 # Daymark
 
-A calm home for tasks, projects, and the days ahead. Daymark reworks the original `ubiquiti-todo` assignment into a responsive workspace with warm paper surfaces, editorial typography, and focused task views.
+A calm home for tasks, projects, and the days ahead. Daymark reworks the original `ubiquiti-todo` assignment into a responsive workspace with a cool blue grid backdrop, bold Inter typography, a floating task-capture form, and focused task views.
 
 Built by [Akash Pathak](https://github.com/akkikumar72) with Next.js, React, TypeScript, Tailwind CSS, and Supabase. This is an independent project, not an official Ubiquiti product.
 
@@ -20,12 +20,13 @@ Open [localhost:3000](http://localhost:3000). No credentials are needed. The app
 ## The workspace
 
 - **My day, Upcoming, All tasks, and Completed**, plus a sidebar entry for each project. View selection is kept in the URL.
+- **Capture a task** from the floating input and press Enter to open its details.
 - **Create and edit tasks** with notes, dates, priorities, and To do / In progress / Completed status. Toggle completion, reopen tasks, and undo a deletion until the undo notification is dismissed or the page is left.
 - **List and board layouts**, scoped search across task names, notes, and projects, priority filters, and due-date / priority / newest sorting. Board status changes use the task editor; there is no drag-and-drop.
 - **Project creation**, workspace progress, local JSON backup, and a sample-data reset with confirmation. A project persists through the tasks it contains; empty custom projects are not stored separately.
 - **Responsive navigation and keyboard controls**: `N` adds a task, `Cmd/Ctrl K` focuses search, and `Esc` closes dialogs. Native dialogs trap focus and restore scrolling. Decorative motion respects reduced-motion preferences.
 
-My day includes unfinished tasks due today or earlier and completed tasks due today. Upcoming includes unfinished tasks with a future date. The progress ring measures all workspace tasks, not a historical productivity score. Sidebar badges count unfinished tasks, except Completed.
+My day includes unfinished tasks due today or earlier and completed tasks due today. Upcoming includes unfinished tasks with a future date. The progress percentage measures all workspace tasks, not a historical productivity score. Sidebar badges count unfinished tasks, except Completed.
 
 Local demo data is stored under `daymark.tasks.v1`. It is not uploaded when you sign in. Export a backup before clearing site data; JSON import is not currently provided. The app preserves unreadable stored data and reports the issue instead of silently replacing it.
 
@@ -68,10 +69,10 @@ yarn verify     # Run all four checks
 | `supabase/schema.sql`           | Additive setup/migration and shared-workspace policies      |
 | `tests/tasks.test.mjs`          | Task-domain regression tests                                |
 
-The redesign keeps the original Next.js 13 / React 18 stack. The decorative sun is CSS, with no WebGL or extra UI dependency. Manrope and Lora are served through `next/font`; Phosphor icons come from the existing `react-icons` package.
+The redesign keeps the original Next.js 13 / React 18 stack. The decorative grid uses CSS, with no WebGL or extra UI dependency. Inter is served through `next/font`; Phosphor icons come from the existing `react-icons` package.
 
 ## Design references and verification
 
-[Todoist’s task management](https://www.todoist.com/task-management) informed the dedicated daily, future, and project views. [TickTick’s feature overview](https://www.ticktick.com/features) informed the switch between focused lists and status boards. Daymark uses its own visual identity, copy, and assets.
+[Todoist’s task management](https://www.todoist.com/task-management) informed the dedicated daily, future, and project views. [TickTick’s feature overview](https://www.ticktick.com/features) informed the switch between focused lists and status boards. The current visual direction follows [Verseo](https://verseo.framer.website/): oversized Inter headings, black controls, bracketed labels, cool blue grids, and layered white panels. These patterns are adapted to Daymark’s task workflows; the implementation, project mark, copy, and product screenshots are local to this project.
 
 See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the tested workflows and the cloud verification boundary. README imagery uses the running application with sample tasks.

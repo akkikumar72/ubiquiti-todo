@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
-import { Manrope, Lora } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-const sans = Manrope({
+const sans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
-const serif = Lora({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  display: "swap",
-});
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Daymark · A little more focus",
+  title: "Daymark · Make room for what matters",
   description:
     "A calm workspace for tasks, projects, and the days ahead. Built with Next.js and Supabase.",
   authors: [{ name: "Akash Pathak", url: "https://github.com/akkikumar72" }],
@@ -25,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="en" className={sans.variable}>
       <body>{children}</body>
     </html>
   );

@@ -19,7 +19,6 @@ import {
   PiQuestion,
   PiFlag,
   PiCheck,
-  PiCommand,
   PiDownloadSimple,
   PiArrowCounterClockwise,
   PiX,
@@ -49,13 +48,14 @@ const navItems = [
 ] as const;
 const titles: Record<string, string> = {
   today: "My day",
-  upcoming: "A little further ahead.",
+  upcoming: "A clear view of what’s next.",
   all: "Everything, in one place.",
-  completed: "Look how far you’ve come.",
+  completed: "Good work. All accounted for.",
 };
 const descriptions: Record<string, string> = {
-  today: "A clear head. A little focus. A good day ahead.",
-  upcoming: "Make room for what’s next, at your own pace.",
+  today: "Turn the things on your mind into a plan for your day.",
+  upcoming:
+    "Plan ahead, set your priorities, and keep your next steps in sight.",
   all: "The big ideas and the small steps that get you there.",
   completed: "Small steps add up. Here’s what you’ve finished.",
 };
@@ -83,6 +83,7 @@ export default function Home({
       : "today";
   const [today, setToday] = useState(initialToday);
   const [query, setQuery] = useState("");
+  const [capture, setCapture] = useState("");
   const [priority, setPriority] = useState("all");
   const [sort, setSort] = useState("due");
   const [layout, setLayout] = useState<"list" | "board">("list");
@@ -108,7 +109,6 @@ export default function Home({
   );
   const openTasks = tasks.filter((t) => t.status !== "done");
   const done = tasks.length - openTasks.length;
-  const dayTasks = tasks.filter((t) => inView(t, "today", today));
   const progress = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   const focusTask = selectTasks(
     openTasks,
@@ -121,11 +121,15 @@ export default function Home({
   const editingExisting = editor
     ? tasks.some((t) => t.id === editor.id)
     : false;
-  const newTask = (status: Task["status"] = "todo", project?: string) => {
+  const newTask = (
+    status: Task["status"] = "todo",
+    project?: string,
+    title = "",
+  ) => {
     if (!ready) return;
     setEditor({
       id: crypto.randomUUID(),
-      title: "",
+      title,
       notes: "",
       priority: "medium",
       status,
@@ -182,7 +186,9 @@ export default function Home({
     <>
       <div className="sidebar-head">
         <Brand />
-        <span className="workspace-label">YOUR EVERYDAY WORKSPACE</span>
+        <span className="workspace-label">
+          [ {cloud ? "shared workspace" : "personal workspace"} ]
+        </span>
       </div>
       <button
         className="add-task-side"
@@ -220,7 +226,7 @@ export default function Home({
           ))}
         </div>
         <div className="project-heading">
-          <span>My projects</span>
+          <span>[ projects ]</span>
           <button
             className="icon-button"
             aria-label="Create project"
@@ -258,11 +264,13 @@ export default function Home({
       </nav>
       <div className="sidebar-bottom">
         <div className="sidebar-note">
-          <span className="tiny-sun">✳</span>
+          <span className="pixel-spark" aria-hidden="true">
+            ✦
+          </span>
           <p>
-            A little more focus.
+            A clear plan.
             <br />
-            <strong>A little more you.</strong>
+            <strong>Space to do your best work.</strong>
           </p>
         </div>
         <button
@@ -302,9 +310,7 @@ export default function Home({
     if (
       await save({ ...task, status: task.status === "done" ? "todo" : "done" })
     )
-      setToast(
-        task.status === "done" ? "Task reopened" : "One more thing, done.",
-      );
+      setToast(task.status === "done" ? "Task reopened" : "Task completed");
   };
   const row = (task: Task, board = false) => (
     <article
@@ -452,42 +458,106 @@ export default function Home({
             </span>
           </div>
         </header>
-        <main id="main" className="main-content">
-          <div className="page-heading">
-            <div>
-              <div className="eyebrow">
-                {new Date(`${today}T12:00:00`).toLocaleDateString("en", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </div>
-              <h1>{title}</h1>
+        <main
+          id="main"
+          className={`main-content ${
+            view === "today" && !query ? "today-view" : "compact-view"
+          }`}
+        >
+          <section className="workspace-hero" aria-labelledby="workspace-title">
+            <div className="hero-grid" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+            <div className="page-heading">
+              <span className="eyebrow">
+                [{" "}
+                {view.startsWith("project:")
+                  ? "project workspace"
+                  : navItems
+                      .find((n) => n.id === view)
+                      ?.label.toLowerCase()}{" "}
+                ]
+              </span>
+              <h1 id="workspace-title">
+                {view === "today" ? (
+                  <>
+                    Less busywork.
+                    <br />
+                    More progress.
+                  </>
+                ) : (
+                  title
+                )}
+              </h1>
               <p>
                 {view.startsWith("project:")
-                  ? "Give your ideas a home. Move them forward, one task at a time."
+                  ? "Every task, deadline, and next step for this project."
                   : descriptions[view]}
               </p>
             </div>
-            <button
-              className="button primary page-add"
-              onClick={() => newTask()}
-              disabled={!ready}
+            <form
+              className="quick-capture"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (capture.trim()) newTask("todo", undefined, capture.trim());
+              }}
             >
-              <PiPlus />
-              New task
-            </button>
+              <div className="capture-input-row">
+                <span className="pixel-spark" aria-hidden="true">
+                  ✦
+                </span>
+                <input
+                  aria-label="Capture a task"
+                  placeholder="What do you want to get done?"
+                  value={capture}
+                  onChange={(event) => setCapture(event.target.value)}
+                  maxLength={160}
+                  required
+                  disabled={!ready}
+                />
+                <button
+                  className="capture-submit"
+                  aria-label="Continue with task details"
+                  disabled={!ready || !capture.trim()}
+                >
+                  <PiArrowRight />
+                </button>
+              </div>
+              <div className="capture-bottom">
+                <span>
+                  <PiCheckCircle /> Task
+                </span>
+                <span>
+                  <PiCalendarBlank />{" "}
+                  {view === "upcoming" ? "Tomorrow" : "Today"}
+                </span>
+                <span className="capture-hint">
+                  Add details <kbd>↵</kbd>
+                </span>
+              </div>
+            </form>
+          </section>
+          <div className="workspace-context">
+            <span>
+              {new Date(`${today}T12:00:00`).toLocaleDateString("en", {
+                weekday: "long",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+            {!cloud && (
+              <p>
+                Sample tasks · saved in this browser{" "}
+                <Link href="/signin">
+                  {cloudConfigured ? "Connect account" : "Cloud setup"}
+                  <PiArrowUpRight />
+                </Link>
+              </p>
+            )}
           </div>
-          {!cloud && (
-            <div className="demo-note">
-              <span>YOUR SPACE TO TRY THINGS</span>Sample tasks, saved in this
-              browser.
-              <Link href="/signin">
-                {cloudConfigured ? "Connect your account" : "About cloud sync"}
-                <PiArrowUpRight />
-              </Link>
-            </div>
-          )}
           {error && (
             <div className="notice error" role="alert">
               {error}
@@ -495,32 +565,25 @@ export default function Home({
           )}
           <div className="workspace-grid">
             <div className="task-area">
-              {view === "today" && !query && (
-                <section className="day-banner">
-                  <div>
-                    <div className="eyebrow">A FRESH PERSPECTIVE</div>
-                    <h2>
-                      One thing
-                      <br />
-                      at a time.
-                    </h2>
-                    <p>
-                      You have{" "}
-                      {ready
-                        ? dayTasks.filter((t) => t.status !== "done").length
-                        : "…"}{" "}
-                      tasks to focus on.
-                      <br />
-                      Let’s make a little progress.
-                    </p>
-                  </div>
-                  <div className="sun-sculpture" aria-hidden="true">
-                    <div className="sun-orbit" />
-                    <div className="sun-sphere" />
-                    <div className="sun-floor" />
-                  </div>
-                </section>
-              )}
+              <div className="task-panel-heading">
+                <div>
+                  <span className="eyebrow">[ your workspace ]</span>
+                  <h2>
+                    {view.startsWith("project:")
+                      ? view.slice(8)
+                      : navItems.find((n) => n.id === view)?.label}
+                    <span>{ready ? filtered.length : "…"}</span>
+                  </h2>
+                </div>
+                <button
+                  className="button primary"
+                  onClick={() => newTask()}
+                  disabled={!ready}
+                >
+                  <PiPlus />
+                  New task
+                </button>
+              </div>
               <div className="tasks-toolbar">
                 <div className="view-switch" aria-label="Task layout">
                   <button
@@ -584,10 +647,10 @@ export default function Home({
                   </span>
                   <h2>
                     {query || priority !== "all"
-                      ? "Nothing matches just yet."
+                      ? "No matching tasks."
                       : view === "completed"
-                      ? "Good things take a first step."
-                      : "A little breathing room."}
+                      ? "Your completed work goes here."
+                      : "You’re all clear."}
                   </h2>
                   <p>
                     {query || priority !== "all"
@@ -680,7 +743,7 @@ export default function Home({
                 onClick={() => newTask()}
               >
                 <PiPlus />
-                Add a task<span>Make space for what’s on your mind.</span>
+                Add a task<span>Capture your next step.</span>
               </button>
               <p className="list-footer">
                 <span>
@@ -694,71 +757,64 @@ export default function Home({
                 </span>
               </p>
             </div>
-            <aside className="day-aside" aria-label="Workspace overview">
+            <aside
+              className="workspace-overview"
+              aria-label="Workspace overview"
+            >
               <section className="progress-card">
-                <div className="aside-title">
-                  <h2>The small wins</h2>
-                  <PiSun />
+                <span className="eyebrow">[ workspace progress ]</span>
+                <div className="progress-value">
+                  <strong>
+                    {ready ? progress : 0}
+                    <small>%</small>
+                  </strong>
+                  <span>
+                    {done} of {tasks.length}
+                    <br />
+                    tasks completed
+                  </span>
                 </div>
                 <div
-                  className="progress-ring"
-                  style={
-                    {
-                      "--progress": `${progress * 3.6}deg`,
-                    } as React.CSSProperties
-                  }
+                  className="mini-progress"
+                  role="progressbar"
+                  aria-label="Workspace completion"
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
                 >
-                  <div>
-                    <strong>
-                      {ready ? progress : "0"}
-                      <small>%</small>
-                    </strong>
-                    <span>complete</span>
-                  </div>
+                  <i style={{ width: `${progress}%` }} />
                 </div>
-                <p>
-                  <strong>
-                    {done} of {tasks.length} tasks
-                  </strong>{" "}
-                  finished.
-                  <br />
-                  Every little step counts.
-                </p>
                 <Link className="text-button" href={href("completed")}>
-                  See your progress
-                  <PiArrowRight />
+                  View completed
+                  <PiArrowUpRight />
                 </Link>
               </section>
-              {focusTask && (
-                <section className="focus-card">
-                  <span className="eyebrow">
-                    <PiFlag />
-                    UP NEXT
-                  </span>
-                  <h2>{focusTask.title}</h2>
-                  <span className="focus-project">{focusTask.project}</span>
-                  <button
-                    className="text-button"
-                    onClick={() => setEditor(focusTask)}
-                  >
-                    Make a start
-                    <PiArrowUpRight />
-                  </button>
-                </section>
-              )}
+              <section className="focus-card">
+                <span className="eyebrow">[ next in focus ]</span>
+                <h2>{focusTask ? focusTask.title : "Your day is clear."}</h2>
+                <p className="focus-project">
+                  {focusTask
+                    ? focusTask.project
+                    : "No unfinished tasks due today."}
+                </p>
+                <button
+                  className="text-button"
+                  onClick={() => (focusTask ? setEditor(focusTask) : newTask())}
+                  disabled={!ready}
+                >
+                  {focusTask ? "Open task" : "Plan your next task"}
+                  <PiArrowUpRight />
+                </button>
+              </section>
               <section className="project-overview">
-                <h2>
-                  Your projects<span>{projects.length}</span>
+                <h2 className="eyebrow">
+                  [ project progress ]<span>{projects.length}</span>
                 </h2>
                 {projects.map((p, i) => {
                   const all = tasks.filter((t) => t.project === p);
                   const count = all.filter((t) => t.status === "done").length;
                   return (
-                    <Link
-                      href={href(`project:${p}`)}
-                      onClick={() => setMenu(false)}
-                      key={p}
-                    >
+                    <Link href={href(`project:${p}`)} key={p}>
                       <span>
                         <i className={`project-dot dot-${i % 3}`} />
                         {p}
@@ -779,20 +835,12 @@ export default function Home({
                   );
                 })}
               </section>
-              <div className="keyboard-hint">
-                <PiCommand />
-                <span>
-                  A little shortcut?
-                  <br />
-                  Press <kbd>N</kbd> to add a task.
-                </span>
-              </div>
             </aside>
           </div>
         </main>
         <footer className="workspace-footer">
-          <span>Made for a little more focus.</span>
-          <span>daymark.</span>
+          <span>Less busywork. More progress.</span>
+          <span>DAYMARK / YOUR EVERYDAY WORKSPACE</span>
         </footer>
       </div>
       {menu && (
@@ -814,10 +862,9 @@ export default function Home({
           onSave={async (task) => {
             const success = await save(task);
             if (success) {
-              setToast(
-                editingExisting ? "Task updated" : "A new task, a fresh start.",
-              );
+              setToast(editingExisting ? "Task updated" : "Task created");
               setUndo(null);
+              if (!editingExisting) setCapture("");
             }
             return success;
           }}
@@ -833,7 +880,7 @@ export default function Home({
       )}{" "}
       {deleteTask && (
         <Dialog title="Delete this task?" onClose={() => setDeleteTask(null)}>
-          <h2 className="modal-title">Make a little space.</h2>
+          <h2 className="modal-title">Delete task</h2>
           <p className="modal-copy">
             “{deleteTask.title}” will be removed. You can undo this until you
             leave or change a task.
@@ -863,7 +910,7 @@ export default function Home({
       )}
       {modal === "project" && (
         <Dialog title="New project" onClose={() => setModal(null)}>
-          <h2 className="modal-title">Give that idea a home.</h2>
+          <h2 className="modal-title">Create a project</h2>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -923,7 +970,7 @@ export default function Home({
             setResetConfirm(false);
           }}
         >
-          <h2 className="modal-title">Your space, your pace.</h2>
+          <h2 className="modal-title">Workspace settings</h2>
           <p className="modal-copy">
             {cloud
               ? "You are using a shared Supabase workspace. Tasks are visible to other authenticated members."
@@ -998,7 +1045,7 @@ export default function Home({
         </Dialog>
       )}
       {modal === "help" && (
-        <Dialog title="A little guidance" onClose={() => setModal(null)}>
+        <Dialog title="Help & shortcuts" onClose={() => setModal(null)}>
           <h2 className="modal-title">
             Less figuring out.
             <br />
@@ -1024,7 +1071,7 @@ export default function Home({
               <strong>Keep it moving</strong>
               <p>
                 Open a task to edit its details or move it from To do to In
-                progress. Check its circle to complete it.
+                progress. Check its box to complete it.
               </p>
             </div>
           </div>

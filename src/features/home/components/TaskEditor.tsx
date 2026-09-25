@@ -48,7 +48,7 @@ export default function TaskEditor({
   };
   return (
     <Dialog
-      title={onDelete ? "Task details" : "A new task"}
+      title={onDelete ? "Task details" : "New task"}
       onClose={onClose}
       className="task-dialog"
     >
@@ -141,7 +141,7 @@ export default function TaskEditor({
               Delete task
             </button>
           ) : (
-            <span className="quiet">A small step is still a step.</span>
+            <span className="quiet">Details can change as you go.</span>
           )}
           <button className="button primary" disabled={busy} type="submit">
             {busy ? "Saving…" : "Save task"}

@@ -8,17 +8,21 @@ export default function AuthLayout({
     <main className="auth-page">
       <section className="auth-story">
         <Brand />
-        <h1>
-          Good days start
-          <br />
-          with a little
-          <br />
-          clarity.
-        </h1>
-        <p>
-          A home for your ideas, your plans, and the little things that make a
-          difference.
-        </p>
+        <div className="auth-story-copy">
+          <span className="eyebrow">[ your everyday workspace ]</span>
+          <h1>
+            Less busywork.
+            <br />
+            More progress.
+          </h1>
+          <p>
+            Your tasks, projects, and next steps. A clear space to bring it all
+            together.
+          </p>
+        </div>
+        <span className="auth-story-foot">
+          DAYMARK / BUILT FOR THE WAY YOU WORK
+        </span>
       </section>
       <section className="auth-main">{children}</section>
     </main>

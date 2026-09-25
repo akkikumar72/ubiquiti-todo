@@ -3,11 +3,17 @@ export default function Brand() {
   return (
     <Link className="brand" href="/" aria-label="Daymark home">
       <span className="brand-mark" aria-hidden="true">
-        ✳
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
       </span>
-      <span>
-        daymark<span className="brand-period">.</span>
-      </span>
+      <span>DAYMARK</span>
     </Link>
   );
 }
